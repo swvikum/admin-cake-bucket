@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /.pnp
+forME.md
 .pnp.*
 .yarn/*
 !.yarn/patches
