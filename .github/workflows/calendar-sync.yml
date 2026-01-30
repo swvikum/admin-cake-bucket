@@ -1,0 +1,25 @@
+# Runs calendar sync against your deployed app on a schedule.
+# Required GitHub Secrets: CALENDAR_SYNC_CRON_SECRET, SYNC_APP_URL
+
+name: Calendar sync
+
+on:
+  schedule:
+    # Daily at 06:00 UTC (adjust to your timezone, e.g. 17:00 UTC ≈ 4am Sydney)
+    - cron: "0 6 * * *"
+  workflow_dispatch: # Allow manual run from Actions tab
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call calendar sync API
+        run: |
+          curl -sS -X POST "${{ secrets.SYNC_APP_URL }}/api/sync/calendar" \
+            -H "Authorization: Bearer ${{ secrets.CALENDAR_SYNC_CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -d '{"daysBack":30,"daysAhead":365}' \
+            -w "\nHTTP %{http_code}\n" \
+            -o /tmp/out
+          cat /tmp/out
+          grep -q '"ok":true' /tmp/out || (echo "Sync reported failure" && exit 1)

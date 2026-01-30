@@ -70,6 +70,16 @@ Call the same `POST /api/sync/calendar` from your scheduler (cron-job.org, GitHu
 
 Use the same env vars (including `GOOGLE_*` and `SUPABASE_SERVICE_ROLE_KEY`) in the environment where the app runs (e.g. Amplify).
 
+#### GitHub Actions (recommended)
+
+A workflow is in `.github/workflows/calendar-sync.yml`. It runs daily at 06:00 UTC and can also be triggered manually (**Actions → Calendar sync → Run workflow**).
+
+1. In your repo: **Settings → Secrets and variables → Actions**.
+2. Add repository secrets:
+   - **`CALENDAR_SYNC_CRON_SECRET`** — same value as your app’s `CALENDAR_SYNC_CRON_SECRET` env var.
+   - **`SYNC_APP_URL`** — base URL of your **deployed** app (e.g. `https://main.xxxx.amplifyapp.com`), no trailing slash.
+3. Push the workflow file; the schedule will run automatically. To test, use **Run workflow**.
+
 ---
 
 ## 3. Event format
