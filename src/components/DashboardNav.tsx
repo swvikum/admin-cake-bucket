@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useAuth } from "@/components/AuthProvider";
+import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import type { Role } from "@/types/database";
 
 const nav: { href: string; label: string; roles: Role[] }[] = [
@@ -15,8 +15,15 @@ const nav: { href: string; label: string; roles: Role[] }[] = [
 
 export function DashboardNav({ role }: { role: Role }) {
   const pathname = usePathname();
-  const { signOut } = useAuth();
+  const router = useRouter();
+  const supabase = createClient();
   const links = nav.filter((n) => n.roles.includes(role));
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
 
   return (
     <nav className="p-4 space-y-1">
@@ -38,7 +45,7 @@ export function DashboardNav({ role }: { role: Role }) {
       })}
       <button
         type="button"
-        onClick={() => signOut()}
+        onClick={handleSignOut}
         className="w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-red-50 hover:text-red-700 transition mt-4"
       >
         Sign out

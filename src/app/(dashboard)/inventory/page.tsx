@@ -39,18 +39,30 @@ export default async function InventoryPage() {
                 return (
                   <tr
                     key={i.id}
-                    className={`border-t border-[#E5CBC9] hover:bg-[#FFF8F0]/50 ${
-                      low ? "bg-red-50/50" : ""
+                    className={`border-t ${
+                      low
+                        ? "bg-red-50 border-red-200 hover:bg-red-100"
+                        : "border-[#E5CBC9] hover:bg-[#FFF8F0]/50"
                     }`}
                   >
-                    <td className="px-4 py-3 font-medium">{i.name}</td>
-                    <td className="px-4 py-3">{i.unit}</td>
-                    <td className="px-4 py-3">{Number(i.stock_on_hand)}</td>
-                    <td className="px-4 py-3">{Number(i.reorder_point)}</td>
-                    <td className="px-4 py-3">${Number(i.cost_per_unit).toFixed(2)}</td>
+                    <td className={`px-4 py-3 font-medium ${low ? "text-red-900 font-semibold" : ""}`}>
+                      {i.name}
+                    </td>
+                    <td className={`px-4 py-3 ${low ? "text-red-700" : ""}`}>{i.unit}</td>
+                    <td className={`px-4 py-3 ${low ? "text-red-700 font-bold" : ""}`}>
+                      {Number(i.stock_on_hand)}
+                    </td>
+                    <td className={`px-4 py-3 ${low ? "text-red-700" : ""}`}>
+                      {Number(i.reorder_point)}
+                    </td>
+                    <td className={`px-4 py-3 ${low ? "text-red-700" : ""}`}>
+                      ${Number(i.cost_per_unit).toFixed(2)}
+                    </td>
                     <td className="px-4 py-3">
                       {i.is_active ? (
-                        <span className="text-green-600">Active</span>
+                        <span className={low ? "text-red-600 font-semibold" : "text-green-600"}>
+                          Active
+                        </span>
                       ) : (
                         <span className="text-gray-500">Inactive</span>
                       )}
@@ -58,13 +70,17 @@ export default async function InventoryPage() {
                     <td className="px-4 py-3 flex gap-2">
                       <Link
                         href={`/inventory/${i.id}`}
-                        className="text-[#C2727C] hover:text-[#723F3B] font-medium"
+                        className={`font-medium ${
+                          low
+                            ? "text-red-700 hover:text-red-900"
+                            : "text-[#C2727C] hover:text-[#723F3B]"
+                        }`}
                       >
                         View
                       </Link>
                       <Link
                         href={`/inventory/${i.id}/edit`}
-                        className="text-gray-500 hover:text-[#723F3B]"
+                        className={low ? "text-red-600 hover:text-red-800" : "text-gray-500 hover:text-[#723F3B]"}
                       >
                         Edit
                       </Link>

@@ -38,26 +38,34 @@ export function ReportSummary({
 }: Props) {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-      <div className="bg-white rounded-xl border border-[#E5CBC9] p-4">
-        <p className="text-sm text-gray-600">Sales ({monthLabel})</p>
-        <p className="text-2xl font-bold text-[#723F3B]">${salesThisMonth.toFixed(2)}</p>
+      <div className="bg-gradient-to-br from-white to-[#FFF8F0] rounded-xl border-2 border-[#E5CBC9] shadow-lg p-5 transition-all hover:scale-105 hover:shadow-xl">
+        <p className="text-sm font-medium text-gray-700 mb-2">Sales ({monthLabel})</p>
+        <p className="text-3xl font-bold text-[#723F3B] leading-tight mb-2">
+          ${salesThisMonth.toFixed(2)}
+        </p>
         <ChangeBadge pct={salesChangePercent} />
       </div>
-      <div className="bg-white rounded-xl border border-[#E5CBC9] p-4">
-        <p className="text-sm text-gray-600">Expenses ({monthLabel})</p>
-        <p className="text-2xl font-bold text-[#723F3B]">${expensesThisMonth.toFixed(2)}</p>
+      <div className="bg-gradient-to-br from-white to-[#FFF8F0] rounded-xl border-2 border-[#E5CBC9] shadow-lg p-5 transition-all hover:scale-105 hover:shadow-xl">
+        <p className="text-sm font-medium text-gray-700 mb-2">Expenses ({monthLabel})</p>
+        <p className="text-3xl font-bold text-[#723F3B] leading-tight mb-2">
+          ${expensesThisMonth.toFixed(2)}
+        </p>
         <ChangeBadge pct={expensesChangePercent} />
       </div>
-      <div className="bg-white rounded-xl border border-[#E5CBC9] p-4">
-        <p className="text-sm text-gray-600">Profit ({monthLabel})</p>
-        <p className={`text-2xl font-bold ${profitThisMonth >= 0 ? "text-[#723F3B]" : "text-red-600"}`}>
+      <div className="bg-gradient-to-br from-white to-[#FFF8F0] rounded-xl border-2 border-[#E5CBC9] shadow-lg p-5 transition-all hover:scale-105 hover:shadow-xl">
+        <p className="text-sm font-medium text-gray-700 mb-2">Profit ({monthLabel})</p>
+        <p
+          className={`text-3xl font-bold leading-tight mb-2 ${
+            profitThisMonth >= 0 ? "text-[#723F3B]" : "text-red-600"
+          }`}
+        >
           ${profitThisMonth.toFixed(2)}
         </p>
         <ChangeBadge pct={profitChangePercent} />
       </div>
-      <div className="bg-white rounded-xl border border-[#E5CBC9] p-4">
-        <p className="text-sm text-gray-600">Orders ({monthLabel})</p>
-        <p className="text-2xl font-bold text-[#723F3B]">{orderCountThisMonth}</p>
+      <div className="bg-gradient-to-br from-white to-[#FFF8F0] rounded-xl border-2 border-[#E5CBC9] shadow-lg p-5 transition-all hover:scale-105 hover:shadow-xl">
+        <p className="text-sm font-medium text-gray-700 mb-2">Orders ({monthLabel})</p>
+        <p className="text-3xl font-bold text-[#723F3B] leading-tight">{orderCountThisMonth}</p>
       </div>
     </div>
   );
