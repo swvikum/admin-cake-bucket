@@ -23,6 +23,8 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   const isLogin = request.nextUrl.pathname === "/login";
+  const isApi = request.nextUrl.pathname.startsWith("/api/");
+  if (isApi) return response; // API routes use their own auth (e.g. Bearer for cron)
   if (!user && !isLogin) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
