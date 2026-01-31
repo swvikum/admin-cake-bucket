@@ -26,13 +26,13 @@ export default async function DashboardPage() {
   const monthEnd = endOfMonth.toISOString();
 
   const [
-    { data: orders },
-    { data: salesWeek },
-    { data: salesMonth },
-    { count: confirmedCount },
-    { count: completedCount },
-    { count: upcomingCount },
-    { data: invItems },
+    ordersResult,
+    salesWeekResult,
+    salesMonthResult,
+    confirmedResult,
+    completedResult,
+    upcomingResult,
+    invResult,
   ] = await Promise.all([
     supabase
       .from("orders")
@@ -63,6 +63,32 @@ export default async function DashboardPage() {
       .in("status", ["confirmed", "in_progress", "pending_confirm"]),
     supabase.from("inventory_items").select("id, stock_on_hand, reorder_point").eq("is_active", true),
   ]);
+
+  const orders = ordersResult.data;
+  const salesWeek = salesWeekResult.data;
+  const salesMonth = salesMonthResult.data;
+  const invItems = invResult.data;
+  const confirmedCount = confirmedResult.count;
+  const completedCount = completedResult.count;
+  const upcomingCount = upcomingResult.count;
+
+  const firstError =
+    ordersResult.error?.message ??
+    salesWeekResult.error?.message ??
+    invResult.error?.message;
+  if (firstError) {
+    return (
+      <div className="p-6 md:p-8">
+        <h1 className="text-2xl font-bold text-[#723F3B] mb-4">Dashboard</h1>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-800">
+          <p className="font-medium">Database error loading dashboard</p>
+          <p className="text-sm mt-1">{firstError}</p>
+          <p className="text-xs mt-2 text-red-600">Run /api/db-check for diagnostics (use Bearer token).</p>
+        </div>
+      </div>
+    );
+  }
+
   const lowStockCount =
     (invItems ?? []).filter((i) => Number(i.stock_on_hand) <= Number(i.reorder_point)).length;
 
