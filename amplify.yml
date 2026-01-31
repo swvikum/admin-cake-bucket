@@ -1,0 +1,23 @@
+# Make Amplify env vars available to Next.js API routes at runtime.
+# Without this, process.env.CALENDAR_SYNC_CRON_SECRET etc. are undefined in /api/*.
+# See: https://docs.aws.amazon.com/amplify/latest/userguide/ssr-environment-variables.html
+
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+    build:
+      commands:
+        - env | grep -E '^(CALENDAR_SYNC_CRON_SECRET|GOOGLE_CALENDAR_ID|GOOGLE_CLIENT_ID|GOOGLE_CLIENT_SECRET|GOOGLE_REDIRECT_URI|SUPABASE_SERVICE_ROLE_KEY)=' >> .env.production || true
+        - env | grep -E '^NEXT_PUBLIC_' >> .env.production || true
+        - npm run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - "**/*"
+  cache:
+    paths:
+      - node_modules/**/*
+      - .next/cache/**/*
