@@ -5,8 +5,8 @@ name: Calendar sync
 
 on:
   schedule:
-    # Daily at 06:00 UTC (= 4–5pm Sydney). For 4am Sydney use "0 17 * * *" (winter) or "0 18 * * *" (summer)
-    - cron: "0 6 * * *"
+    # Daily at 18:00 UTC (= 4–5am Sydney next day)
+    - cron: "0 18 * * *"
   workflow_dispatch: # Allow manual run from Actions tab
 
 concurrency: calendar-sync  # Skip new run if previous still running
