@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { MovementType } from "@/types/database";
@@ -17,7 +17,7 @@ export function MovementForm({
   createdBy: string | null;
 }) {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [loading, setLoading] = useState(false);
   const [movement_type, setMovement_type] = useState<MovementType>("purchase");
   const [quantity, setQuantity] = useState<number>(0);

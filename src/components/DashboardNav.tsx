@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -16,7 +17,7 @@ const nav: { href: string; label: string; roles: Role[] }[] = [
 export function DashboardNav({ role }: { role: Role }) {
   const pathname = usePathname();
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const links = nav.filter((n) => n.roles.includes(role));
 
   async function handleSignOut() {

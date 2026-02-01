@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { OrderStatus } from "@/types/database";
 
@@ -26,7 +26,7 @@ export function OrderStatusForm({
   const [status, setStatus] = useState(currentStatus);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   async function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const v = e.target.value as OrderStatus;
