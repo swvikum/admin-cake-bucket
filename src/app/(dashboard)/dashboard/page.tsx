@@ -25,8 +25,13 @@ export default async function DashboardPage() {
   const monthStart = startOfMonth.toISOString();
   const monthEnd = endOfMonth.toISOString();
 
+  // Today at start of day for splitting past/upcoming
+  const todayStart = new Date(now);
+  todayStart.setHours(0, 0, 0, 0);
+
   const [
-    ordersResult,
+    pastOrdersResult,
+    upcomingOrdersResult,
     salesWeekResult,
     salesMonthResult,
     confirmedResult,
@@ -34,10 +39,18 @@ export default async function DashboardPage() {
     upcomingResult,
     invResult,
   ] = await Promise.all([
+    // Last 5 orders from today and before (any status), most recent first
     supabase
       .from("orders")
       .select("id, customer_name, status, total, due_at")
-      .in("status", ["confirmed", "in_progress", "ready", "delivered", "completed"])
+      .lte("due_at", now.toISOString())
+      .order("due_at", { ascending: false })
+      .limit(5),
+    // Upcoming 10 orders (future, any status), soonest first
+    supabase
+      .from("orders")
+      .select("id, customer_name, status, total, due_at")
+      .gt("due_at", now.toISOString())
       .order("due_at", { ascending: true })
       .limit(10),
     // This week: orders due this week (Monday to Sunday)
@@ -64,7 +77,12 @@ export default async function DashboardPage() {
     supabase.from("inventory_items").select("id, stock_on_hand, reorder_point").eq("is_active", true),
   ]);
 
-  const orders = ordersResult.data;
+  const pastOrders = pastOrdersResult.data ?? [];
+  const upcomingOrders = upcomingOrdersResult.data ?? [];
+  // Combine: past orders (reversed to show oldest first) + upcoming orders
+  // Past orders are fetched desc, so reverse them to chronological, then add upcoming
+  const orders = [...pastOrders.reverse(), ...upcomingOrders];
+  
   const salesWeek = salesWeekResult.data;
   const salesMonth = salesMonthResult.data;
   const invItems = invResult.data;
@@ -73,7 +91,8 @@ export default async function DashboardPage() {
   const upcomingCount = upcomingResult.count;
 
   const firstError =
-    ordersResult.error?.message ??
+    pastOrdersResult.error?.message ??
+    upcomingOrdersResult.error?.message ??
     salesWeekResult.error?.message ??
     invResult.error?.message;
   if (firstError) {

@@ -92,10 +92,13 @@ export function DashboardMetrics({
       <div className="bg-white rounded-xl border-2 border-[#E5CBC9] shadow-lg overflow-hidden">
         <h2 className="px-6 py-4 text-xl font-bold text-[#723F3B] border-b-2 border-[#E5CBC9] bg-gradient-to-r from-[#FFF8F0] to-white">
           Recent orders
+          <span className="text-sm font-normal text-gray-500 ml-2">
+            ({orders.length} orders)
+          </span>
         </h2>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
           <table className="w-full">
-            <thead>
+            <thead className="sticky top-0 z-10">
               <tr className="bg-gradient-to-r from-[#FFF8F0] to-[#fef9f5] text-left">
                 <th className="px-6 py-4 text-base font-semibold text-[#723F3B]">Customer / Due</th>
                 <th className="px-6 py-4 text-base font-semibold text-[#723F3B]">Status</th>
@@ -103,7 +106,7 @@ export function DashboardMetrics({
               </tr>
             </thead>
             <tbody>
-              {orders.slice(0, 10).map((o, idx) => (
+              {orders.slice(0, 15).map((o, idx) => (
                 <tr
                   key={o.id}
                   className={`border-t border-[#E5CBC9] transition-colors hover:bg-[#FFF8F0]/50 ${
