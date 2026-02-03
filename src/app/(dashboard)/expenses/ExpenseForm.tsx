@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useSupabase } from "@/lib/supabase/use-supabase";
 
 type Props = {
   expenseId?: string;
@@ -25,7 +25,7 @@ export function ExpenseForm({
   createdBy,
 }: Props) {
   const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
+  const { supabase, refreshSession } = useSupabase();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,6 +43,10 @@ export function ExpenseForm({
     setError(null);
     setLoading(true);
     try {
+      // Refresh session before save to ensure valid auth
+      const sessionOk = await refreshSession();
+      if (!sessionOk) return; // Will redirect to login if session invalid
+
       if (expenseId) {
         const { error: err } = await supabase
           .from("expenses")

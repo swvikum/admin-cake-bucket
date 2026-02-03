@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useSupabase } from "@/lib/supabase/use-supabase";
 import type { MovementType } from "@/types/database";
 
 export function MovementForm({
@@ -17,7 +17,7 @@ export function MovementForm({
   createdBy: string | null;
 }) {
   const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
+  const { supabase, refreshSession } = useSupabase();
   const [loading, setLoading] = useState(false);
   const [movement_type, setMovement_type] = useState<MovementType>("purchase");
   const [quantity, setQuantity] = useState<number>(0);
@@ -33,6 +33,10 @@ export function MovementForm({
     if (effectiveQty === 0) return;
     setLoading(true);
     try {
+      // Refresh session before save to ensure valid auth
+      const sessionOk = await refreshSession();
+      if (!sessionOk) return;
+
       const { error: movErr } = await supabase.from("inventory_movements").insert({
         item_id: itemId,
         movement_type,

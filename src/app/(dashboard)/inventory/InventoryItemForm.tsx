@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useSupabase } from "@/lib/supabase/use-supabase";
 
 function getErrorMessage(err: unknown): string {
   if (err instanceof Error) return err.message;
@@ -29,7 +29,7 @@ type Props = {
 
 export function InventoryItemForm({ itemId, initial }: Props) {
   const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
+  const { supabase, refreshSession } = useSupabase();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,6 +47,10 @@ export function InventoryItemForm({ itemId, initial }: Props) {
     setError(null);
     setLoading(true);
     try {
+      // Refresh session before save to ensure valid auth
+      const sessionOk = await refreshSession();
+      if (!sessionOk) return;
+
       if (itemId) {
         const { error: err } = await supabase
           .from("inventory_items")

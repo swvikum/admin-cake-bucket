@@ -25,9 +25,9 @@ export default async function DashboardPage() {
   const monthStart = startOfMonth.toISOString();
   const monthEnd = endOfMonth.toISOString();
 
-  // Today at start of day for splitting past/upcoming
-  const todayStart = new Date(now);
-  todayStart.setHours(0, 0, 0, 0);
+  // 7 days from now for upcoming metric
+  const sevenDaysLater = new Date(now);
+  sevenDaysLater.setDate(now.getDate() + 7);
 
   const [
     pastOrdersResult,
@@ -73,6 +73,7 @@ export default async function DashboardPage() {
       .from("orders")
       .select("id", { count: "exact", head: true })
       .gte("due_at", now.toISOString())
+      .lt("due_at", sevenDaysLater.toISOString())
       .in("status", ["confirmed", "in_progress", "pending_confirm"]),
     supabase.from("inventory_items").select("id, stock_on_hand, reorder_point").eq("is_active", true),
   ]);
@@ -115,23 +116,25 @@ export default async function DashboardPage() {
   const monthSales = (salesMonth ?? []).reduce((s, r) => s + Number(r.total), 0);
 
   return (
-    <div className="p-6 md:p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-6 md:p-8 h-full flex flex-col overflow-hidden">
+      <div className="flex items-center justify-between mb-6 shrink-0">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold text-[#723F3B]">Dashboard</h1>
           <DashboardGreeting />
         </div>
         <SydneyClock />
       </div>
-      <DashboardMetrics
-        weekSales={weekSales}
-        monthSales={monthSales}
-        confirmedCount={confirmedCount ?? 0}
-        completedCount={completedCount ?? 0}
-        upcomingCount={upcomingCount ?? 0}
-        lowStockCount={lowStockCount}
-        orders={orders ?? []}
-      />
+      <div className="flex-1 min-h-0">
+        <DashboardMetrics
+          weekSales={weekSales}
+          monthSales={monthSales}
+          confirmedCount={confirmedCount ?? 0}
+          completedCount={completedCount ?? 0}
+          upcomingCount={upcomingCount ?? 0}
+          lowStockCount={lowStockCount}
+          orders={orders ?? []}
+        />
+      </div>
     </div>
   );
 }

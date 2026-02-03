@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useMemo } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useState } from "react";
+import { useSupabase } from "@/lib/supabase/use-supabase";
 import type { OrderStatus } from "@/types/database";
 
 const STATUSES: OrderStatus[] = [
@@ -26,12 +26,17 @@ export function OrderStatusForm({
   const [status, setStatus] = useState(currentStatus);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
+  const { supabase, refreshSession } = useSupabase();
 
   async function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const v = e.target.value as OrderStatus;
     setStatus(v);
     setLoading(true);
+    
+    // Refresh session before save to ensure valid auth
+    const sessionOk = await refreshSession();
+    if (!sessionOk) return;
+    
     await supabase.from("orders").update({ status: v, updated_at: new Date().toISOString() }).eq("id", orderId);
     setLoading(false);
     router.refresh();

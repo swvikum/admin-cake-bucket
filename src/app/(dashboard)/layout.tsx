@@ -20,13 +20,13 @@ export default async function DashboardLayout({
     .single();
 
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen flex overflow-hidden">
       <CollapsibleSidebar
         role={(profile?.role as "admin" | "manager" | "employee") ?? "employee"}
         userEmail={user.email ?? ""}
         userName={profile?.full_name ?? null}
       />
-      <main className="flex-1 overflow-auto bg-[#FFF8F0] relative">
+      <main className="flex-1 overflow-hidden bg-[#FFF8F0] relative">
         {children}
       </main>
     </div>

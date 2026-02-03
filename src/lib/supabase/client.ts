@@ -1,18 +1,13 @@
 import { createBrowserClient } from "@supabase/ssr";
-import type { SupabaseClient } from "@supabase/supabase-js";
 
-// Singleton pattern - reuse the same client instance to prevent session token issues
-let supabaseClient: SupabaseClient | null = null;
-
+/**
+ * Creates a Supabase browser client.
+ * Note: createBrowserClient already implements singleton pattern internally,
+ * so each call returns the same instance for the same URL/key combination.
+ */
 export function createClient() {
-  if (supabaseClient) {
-    return supabaseClient;
-  }
-
-  supabaseClient = createBrowserClient(
+  return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
-
-  return supabaseClient;
 }

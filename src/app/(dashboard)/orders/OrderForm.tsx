@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useSupabase } from "@/lib/supabase/use-supabase";
 
 type ItemRow = { item_name: string; quantity: number; unit_price: number; notes: string };
 type Profile = { id: string; full_name: string | null };
@@ -35,7 +35,7 @@ export function OrderForm({
 }) {
   const isEdit = !!orderId;
   const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
+  const { supabase, refreshSession } = useSupabase();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -77,6 +77,10 @@ export function OrderForm({
     setError(null);
     setLoading(true);
     try {
+      // Refresh session before save to ensure valid auth
+      const sessionOk = await refreshSession();
+      if (!sessionOk) return;
+
       if (isEdit && orderId) {
         const { error: upErr } = await supabase
           .from("orders")

@@ -1,5 +1,18 @@
 "use client";
 
+import type { OrderStatus } from "@/types/database";
+
+const STATUS_COLORS: Record<OrderStatus, string> = {
+  draft: "bg-gray-100 text-gray-600 border border-gray-300",
+  pending_confirm: "bg-yellow-100 text-yellow-700 border border-yellow-300",
+  confirmed: "bg-[#D7A1B4]/30 text-[#723F3B] border border-[#D7A1B4]",
+  in_progress: "bg-blue-100 text-blue-700 border border-blue-300",
+  ready: "bg-purple-100 text-purple-700 border border-purple-300",
+  delivered: "bg-indigo-100 text-indigo-700 border border-indigo-300",
+  completed: "bg-green-100 text-green-700 border border-green-300",
+  cancelled: "bg-red-100 text-red-600 border border-red-300",
+};
+
 const cards = [
   {
     label: "This week sales",
@@ -26,7 +39,7 @@ const cards = [
     className: "bg-gradient-to-br from-green-50 to-green-100/50 border-2 border-green-300 shadow-lg",
   },
   {
-    label: "Upcoming (due soon)",
+    label: "Upcoming (7 Days)",
     value: (v: number) => String(v),
     key: "upcomingCount" as const,
     className: "bg-gradient-to-br from-white to-[#FFF8F0] border-2 border-[#E5CBC9] shadow-md",
@@ -68,8 +81,8 @@ export function DashboardMetrics({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+    <div className="flex flex-col gap-6 h-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 shrink-0">
         {cards.map((c) => {
           const v = values[c.key];
           const cn =
@@ -89,14 +102,14 @@ export function DashboardMetrics({
           );
         })}
       </div>
-      <div className="bg-white rounded-xl border-2 border-[#E5CBC9] shadow-lg overflow-hidden">
-        <h2 className="px-6 py-4 text-xl font-bold text-[#723F3B] border-b-2 border-[#E5CBC9] bg-gradient-to-r from-[#FFF8F0] to-white">
+      <div className="bg-white rounded-xl border-2 border-[#E5CBC9] shadow-lg overflow-hidden flex flex-col flex-1 min-h-0">
+        <h2 className="px-6 py-4 text-xl font-bold text-[#723F3B] border-b-2 border-[#E5CBC9] bg-gradient-to-r from-[#FFF8F0] to-white shrink-0">
           Recent orders
           <span className="text-sm font-normal text-gray-500 ml-2">
             ({orders.length} orders)
           </span>
         </h2>
-        <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
+        <div className="overflow-x-auto overflow-y-auto flex-1">
           <table className="w-full">
             <thead className="sticky top-0 z-10">
               <tr className="bg-gradient-to-r from-[#FFF8F0] to-[#fef9f5] text-left">
@@ -128,11 +141,7 @@ export function DashboardMetrics({
                   <td className="px-6 py-4">
                     <span
                       className={`inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold ${
-                        o.status === "completed"
-                          ? "bg-green-100 text-green-700 border border-green-300"
-                          : o.status === "confirmed"
-                            ? "bg-[#D7A1B4]/30 text-[#723F3B] border border-[#D7A1B4]"
-                            : "bg-[#E5CBC9] text-[#723F3B] border border-[#D7A1B4]"
+                        STATUS_COLORS[o.status as OrderStatus] || "bg-gray-100 text-gray-600"
                       }`}
                     >
                       {o.status.replace("_", " ")}
