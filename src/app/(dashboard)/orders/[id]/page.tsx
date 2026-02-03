@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { OrderStatusForm } from "./OrderStatusForm";
+import { DeleteOrderButton } from "./DeleteOrderButton";
 
 export default async function OrderDetailPage({
   params,
@@ -91,13 +92,14 @@ export default async function OrderDetailPage({
           <p className="px-4 py-6 text-gray-500 text-center text-sm">No items.</p>
         )}
       </div>
-      <div className="mt-6 flex gap-3">
+      <div className="mt-6 flex flex-wrap gap-3">
         <Link
           href={`/orders/${id}/edit`}
           className="px-4 py-2 bg-[#C2727C] hover:bg-[#723F3B] text-white font-medium rounded-lg transition"
         >
           Edit order
         </Link>
+        <DeleteOrderButton orderId={id} />
       </div>
     </div>
   );
