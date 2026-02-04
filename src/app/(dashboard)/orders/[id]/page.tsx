@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { OrderStatusForm } from "./OrderStatusForm";
 import { DeleteOrderButton } from "./DeleteOrderButton";
+import { GenerateInvoiceButton } from "./GenerateInvoiceButton";
 
 export default async function OrderDetailPage({
   params,
@@ -93,6 +94,32 @@ export default async function OrderDetailPage({
         )}
       </div>
       <div className="mt-6 flex flex-wrap gap-3">
+        <GenerateInvoiceButton 
+          order={{
+            id: order.id,
+            customer_name: order.customer_name,
+            customer_phone: order.customer_phone,
+            customer_email: order.customer_email,
+            due_at: order.due_at,
+            status: order.status,
+            subtotal: order.subtotal,
+            discount: order.discount,
+            delivery_fee: order.delivery_fee,
+            total: order.total,
+            deposit_paid: order.deposit_paid,
+            balance_due: order.balance_due,
+            notes: order.notes,
+            created_at: order.created_at,
+          }}
+          items={(items ?? []).map(i => ({
+            id: i.id,
+            item_name: i.item_name,
+            quantity: i.quantity,
+            unit_price: i.unit_price,
+            line_total: i.line_total,
+            notes: i.notes,
+          }))}
+        />
         <Link
           href={`/orders/${id}/edit`}
           className="px-4 py-2 bg-[#C2727C] hover:bg-[#723F3B] text-white font-medium rounded-lg transition"

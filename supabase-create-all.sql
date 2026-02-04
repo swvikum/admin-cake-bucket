@@ -333,7 +333,62 @@ create policy "expenses_delete"
 
 
 -- ============================================
--- 7. GOOGLE_CALENDAR_TOKENS TABLE
+-- 7. INVOICES TABLE (for tracking invoice numbers)
+-- ============================================
+-- Create sequence starting from 200
+create sequence if not exists invoice_number_seq start with 200;
+
+create table if not exists public.invoices (
+  id uuid primary key default gen_random_uuid(),
+  invoice_number integer not null unique default nextval('invoice_number_seq'),
+  order_id uuid not null references public.orders(id) on delete cascade,
+  customer_name text not null,
+  total numeric(10,2) not null default 0,
+  balance_due numeric(10,2) not null default 0,
+  event_date timestamptz,
+  special_notes text,
+  created_by uuid references auth.users(id),
+  created_at timestamptz not null default now()
+);
+
+comment on table public.invoices is 'Invoice records for tracking invoice numbers (starting from 200)';
+
+-- Create indexes for faster lookups
+create index if not exists idx_invoices_order_id on public.invoices(order_id);
+create index if not exists idx_invoices_invoice_number on public.invoices(invoice_number);
+create index if not exists idx_invoices_created_at on public.invoices(created_at desc);
+
+-- Enable RLS
+alter table public.invoices enable row level security;
+
+-- RLS Policies for invoices (authenticated users can manage)
+create policy "invoices_select_authenticated"
+  on public.invoices for select
+  to authenticated
+  using (true);
+
+create policy "invoices_insert_authenticated"
+  on public.invoices for insert
+  to authenticated
+  with check (true);
+
+create policy "invoices_update_authenticated"
+  on public.invoices for update
+  to authenticated
+  using (true);
+
+create policy "invoices_delete_authenticated"
+  on public.invoices for delete
+  to authenticated
+  using (true);
+
+-- Grant permissions
+grant all on public.invoices to authenticated;
+grant usage, select on sequence invoice_number_seq to authenticated;
+
+
+-- ============================================
+-- 8. GOOGLE_CALENDAR_TOKENS TABLE
 -- ============================================
 create table if not exists public.google_calendar_tokens (
   id uuid primary key default gen_random_uuid(),
